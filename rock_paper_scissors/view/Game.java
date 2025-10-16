@@ -1,3 +1,10 @@
+package rock_paper_scissors.view;
+import rock_paper_scissors.interfaces.ChoiceChecker;
+import rock_paper_scissors.model.*;
+import rock_paper_scissors.module.PaperChecker;
+import rock_paper_scissors.module.RockChecker;
+import rock_paper_scissors.module.ScissorsChecker;
+
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -387,9 +394,9 @@ public class Game {
         stopCountdownTimer();
         stopNextRoundTimer();
 
-        Choice computerChoice = computer.play();
+        RPSChoice computerChoice = computer.play();
         user.setChoice(playerChoice);
-        Choice userChoice = user.play();
+        RPSChoice userChoice = user.play();
 
         Round round = new Round(checkers);
         

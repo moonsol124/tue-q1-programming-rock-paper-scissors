@@ -1,3 +1,7 @@
+package rock_paper_scissors.model;
+
+import rock_paper_scissors.interfaces.ChoiceChecker;
+
 /**
  * This Round class represents each round of the game.
  * It checkes either if the user won or lost, via polymorphism
@@ -18,7 +22,7 @@ public class Round {
      * and returns true if the user won,
      * otherwise, false.
      */
-    public Boolean go(Choice userChoice, Choice computerChoice) {
+    public Boolean go(RPSChoice userChoice, RPSChoice computerChoice) {
         boolean result = false;
         for (int i = 0; i < checkers.length; i++) {
             checkers[i].setUserChoice(userChoice);
