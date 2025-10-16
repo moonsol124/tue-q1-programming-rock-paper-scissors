@@ -1,20 +1,22 @@
 package rock_paper_scissors.model;
 
 import rock_paper_scissors.abstracts.Player;
+import rock_paper_scissors.abstracts.RPSChoice;
 
 /**
  * User player that extends 'Player' superclass.
  * It represents the users,
  */
 public class User extends Player {
-    String choice;
+    String input;
+    RPSChoice choice;
 
     public User(String name) {
         super(name);
     }
 
     public void setChoice(String input) {
-        this.choice = input;
+        this.input = input;
     }
 
     /**
@@ -22,16 +24,21 @@ public class User extends Player {
      * Either rock, paper, or scissors.
      */
     @Override
-    public RPSChoice play() {
+    public void play() {
         RPSChoice option = new Rock();
 
-        if (choice.equals("Paper")) {
+        if (this.input.equals("Paper")) {
             option = new Paper();
         }
-        if (choice.equals("Scissors")) {
+        if (this.input.equals("Scissors")) {
             option = new Scissors();
         }
 
-        return option;
+        System.out.println(option.getName());
+        this.choice = option;
+    }
+
+    public RPSChoice getChoice() {
+        return this.choice;
     }
 }

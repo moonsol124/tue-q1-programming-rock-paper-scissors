@@ -1,7 +1,7 @@
 package rock_paper_scissors.module;
 
+import rock_paper_scissors.abstracts.RPSChoice;
 import rock_paper_scissors.interfaces.ChoiceChecker;
-import rock_paper_scissors.model.RPSChoice;
 
 /**
  * The paper checker implements the ChoiceChecker interface

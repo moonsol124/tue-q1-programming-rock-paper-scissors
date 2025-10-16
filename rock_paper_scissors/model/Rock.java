@@ -1,5 +1,7 @@
 package rock_paper_scissors.model;
 
+import rock_paper_scissors.abstracts.RPSChoice;
+
 public class Rock extends RPSChoice {
     Rock() {
         super(1, "Rock");

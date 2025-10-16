@@ -1,11 +1,14 @@
 package rock_paper_scissors.model;
 import java.util.Random;
-
 import rock_paper_scissors.abstracts.Player;
+import rock_paper_scissors.abstracts.RPSChoice;
+
 /**
  * Computer class represents the computer. It plays randomly against the user.
  */
 public class Computer extends Player {
+    private RPSChoice choice;
+
     public Computer(String name) {
         super(name);
     }
@@ -14,7 +17,7 @@ public class Computer extends Player {
      * The computer plays randomly.
      * Either rock, paper, or scissors.
      */
-    public RPSChoice play() {
+    public void play() {
         String[] options = {"Rock", "Paper", "Scissors"};
         String computerChoice = options[new Random().nextInt(3)];
 
@@ -27,6 +30,10 @@ public class Computer extends Player {
             option = new Scissors();
         }
 
-        return option;
+        choice = option;
+    }
+
+    public RPSChoice getChoice() {
+        return this.choice;
     }
 }

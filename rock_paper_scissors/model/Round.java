@@ -1,5 +1,6 @@
 package rock_paper_scissors.model;
 
+import rock_paper_scissors.abstracts.RPSChoice;
 import rock_paper_scissors.interfaces.ChoiceChecker;
 
 /**

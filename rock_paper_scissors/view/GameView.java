@@ -1,9 +1,10 @@
 package rock_paper_scissors.view;
-import rock_paper_scissors.interfaces.ChoiceChecker;
+
+import rock_paper_scissors.abstracts.*;
+import rock_paper_scissors.controller.*;
+import rock_paper_scissors.interfaces.*;
 import rock_paper_scissors.model.*;
-import rock_paper_scissors.module.PaperChecker;
-import rock_paper_scissors.module.RockChecker;
-import rock_paper_scissors.module.ScissorsChecker;
+import rock_paper_scissors.module.*;
 
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -53,7 +54,7 @@ import java.util.Random;
  * The actual logics behind the GUI are implemented in other classes.
  * The focus of this class is mainly the GUI.
  */
-public class Game {
+public class GameView {
     User user;
     Computer computer;
     ChoiceChecker[] checkers;
@@ -64,6 +65,7 @@ public class Game {
     int computerWinCount = 0;
     int roundsPlayed = 0;
     final int TOTAL_ROUNDS = 3;
+    RoundController roundController;
 
     JFrame frame;
     JPanel gameBackgroundPanel;
@@ -104,44 +106,12 @@ public class Game {
     javax.swing.Timer nextRoundTimer;
     int countdownValue;
 
- // === Custom UI Helper ===
-    private void styleButton(JButton btn, Color bg, Color fg) {
-        btn.setFocusPainted(false);
-        btn.setBackground(bg);
-        btn.setForeground(fg);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 16));
-        btn.setBorder(new LineBorder(bg.darker(), 2, true));
-        btn.setPreferredSize(new Dimension(150, 45));
-
-        // hover effect
-        btn.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(bg.brighter());
-            }
-
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                btn.setBackground(bg);
-            }
-        });
-    }
-
-    private JPanel createCardPanel(Color bgColor) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(bgColor);
-        panel.setBorder(new CompoundBorder(
-                new LineBorder(Color.DARK_GRAY, 2, true),
-                new EmptyBorder(20, 20, 20, 20)
-        ));
-        return panel;
-    }
-
-    public Game(String username) {
+    public GameView() {
         BORDER_SIZE = 20;
         checkers = new ChoiceChecker[]{new RockChecker(), new PaperChecker(), new ScissorsChecker()};
-        user = new User(username);
+        user = new User("User");
         computer = new Computer("Computer");
-
-        // ==== Frame setup ====
+        // Frame setup
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame("Rock Paper Scissors");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,13 +119,13 @@ public class Game {
         frame.setLocationRelativeTo(null);
         frame.getContentPane().setBackground(new Color(245, 245, 250));
 
-        // ==== Layout setup ====
+        // Layout setup
         cardLayout = new CardLayout();
         gameBackgroundPanel = new JPanel(cardLayout);
         gameBackgroundPanel.setBackground(new Color(245, 245, 245));
         gameBackgroundPanel.setBorder(new EmptyBorder(BORDER_SIZE, BORDER_SIZE, BORDER_SIZE, BORDER_SIZE));
 
-        // ==== Common UI components ====
+        // Common UI components
         titleLabel = new JLabel("Rock Paper Scissors", SwingConstants.CENTER);
         titleLabel.setOpaque(true);
         titleLabel.setBackground(new Color(66, 133, 244));
@@ -201,43 +171,33 @@ public class Game {
         styleButton(yesButton, neutralColor, Color.WHITE);
         styleButton(noButton, accentColor, Color.WHITE);
 
-        // ===== Initial Panel =====
-        initialPanel = new JPanel(new GridBagLayout());
-        initialPanel.setBackground(new Color(250, 250, 250));
+        // initial panel
+        InitialView initView = new InitialView();
+        initialPanel = initView;
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.insets = new Insets(10, 0, 20, 0);
-        initialPanel.add(titleLabel, gbc);
+        randomModeButton = initView.randomModeButton;
+        endlessTrialButton = initView.endlessTrialButton;
+        titleLabel = initView.titleLabel;
 
-        gbc.gridy = 1;
-        gbc.insets = new Insets(10, 0, 10, 0);
-        initialPanel.add(randomModeButton, gbc);
-
-        gbc.gridy = 2;
-        initialPanel.add(endlessTrialButton, gbc);
-
-        // ===== Random Mode Panel =====
-        randomModePanel = createCardPanel(new Color(255, 235, 238));
-
+        // Random Mode Panel 
+        RandomModeView rmView = new RandomModeView();
+        randomModePanel = rmView;
         JPanel topRandomPanel = new JPanel(new BorderLayout());
-        topRandomPanel.setOpaque(false);
 
-        JPanel statsRandomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
-        statsRandomPanel.setOpaque(false);
-        statsRandomPanel.add(winCountLabel);
-        statsRandomPanel.add(roundsLeftLabel);
-        topRandomPanel.add(statsRandomPanel, BorderLayout.WEST);
-        topRandomPanel.add(backRandomButton, BorderLayout.EAST);
+        topRandomPanel = rmView.topPanel;    
+        centerPanel = rmView.centerPanel; 
+        winCountLabel = rmView.winCountLabel;
+        roundsLeftLabel = rmView.roundsLeftLabel;
+        announcement = rmView.announcement;
+        rockButton = rmView.rockButton;
+        paperButton = rmView.paperButton;
+        scissorsButton = rmView.scissorsButton;
+        backRandomButton = rmView.backButton;
+ 
+        centerPanel = rmView.centerPanel;
+        centerCardLayout = (CardLayout) centerPanel.getLayout();
 
-        randomModePanel.add(topRandomPanel, BorderLayout.NORTH);
-
-        centerCardLayout = new CardLayout();
-        centerPanel = new JPanel(centerCardLayout);
-        centerPanel.setOpaque(false);
-
-        // announce card
+        // announce panel
         JPanel announceCard = new JPanel(new BorderLayout());
         announceCard.setOpaque(false);
         announceCard.add(announcement, BorderLayout.CENTER);
@@ -262,6 +222,7 @@ public class Game {
         resultPanel.add(againLabel, gbcResult);
 
         gbcResult.gridy = 2;
+
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         buttonsPanel.setOpaque(false);
         buttonsPanel.add(yesButton);
@@ -273,7 +234,8 @@ public class Game {
 
         randomModePanel.add(centerPanel, BorderLayout.CENTER);
 
-        JPanel bottomRandomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
+        JPanel bottomRandomPanel = rmView.bottomPanel;
+
         bottomRandomPanel.setOpaque(false);
         bottomRandomPanel.add(rockButton);
         bottomRandomPanel.add(paperButton);
@@ -282,7 +244,7 @@ public class Game {
 
         disableChoices();
 
-        // ===== Endless Trial Panel =====
+        // endless trial panel
         endlessTrialPanel = createCardPanel(new Color(255, 249, 196));
 
         JPanel topEndlessPanel = new JPanel(new BorderLayout());
@@ -301,9 +263,13 @@ public class Game {
 
         topEndlessPanel.add(statsEndlessPanel, BorderLayout.WEST);
         topEndlessPanel.add(buttonsEndlessPanel, BorderLayout.EAST);
-        endlessTrialPanel.add(topEndlessPanel, BorderLayout.NORTH);
+        
+        EndlessTrialView etView = new EndlessTrialView();
+        endlessTrialPanel = etView;
 
-        // ==== Add panels to CardLayout ====
+        finishGameButton = etView.finishGameButton;
+        backEndlessButton = etView.backButton;
+
         gameBackgroundPanel.add(initialPanel, "initial");
         gameBackgroundPanel.add(randomModePanel, "random");
         gameBackgroundPanel.add(endlessTrialPanel, "endless");
@@ -311,8 +277,54 @@ public class Game {
         frame.add(gameBackgroundPanel);
     }
 
+    private void playRound(String playerChoice) {
+        if (countdownTimer != null && countdownTimer.isRunning()) return;
+
+        disableChoices();
+        stopCountdownTimer();
+        stopNextRoundTimer();
+
+        user.setChoice(playerChoice);
+        roundController = new RoundController(checkers, computer, user);
+        boolean result = false;
+        result = roundController.determineWinner();
+
+        if (result) {
+            resultText = "You win!";
+            winCount++;
+        } else {
+            computerWinCount++;
+            resultText = "You Lose!";
+        }
+
+        if (roundController.determineDraw()) {
+            resultText = "draw!";
+        }
+
+        winCountLabel.setText("Win Count: " + winCount);
+        roundsPlayed++;
+        roundsLeftLabel.setText("Rounds Left: " + (TOTAL_ROUNDS - roundsPlayed));
+
+        announcement.setText("<html><div style='text-align:center; font-size:18px;'><b>" + resultText +
+                "</b><br>You: " + roundController.getUserchoiceName() + "<br>Computer: " + roundController.getComputerChoiceName() + "</div></html>");
+
+        nextRoundTimer = new javax.swing.Timer(ROUND_DELAY_MS, e -> {
+            stopNextRoundTimer();
+            centerCardLayout.show(centerPanel, "announce"); // show announcement
+
+            if (roundsPlayed >= TOTAL_ROUNDS) {
+                endGame(); // trigger endGame after showing announcement
+            } else {
+                startCountdown(); // start next round countdown
+            }
+        });
+        nextRoundTimer.setRepeats(false);
+        nextRoundTimer.start();
+    }
+
+    
     public void play() {
-        // Only listeners and runtime logic — no UI layout here!
+        // listners
         randomModeButton.addActionListener(e -> enterRandomMode());
         endlessTrialButton.addActionListener(e -> {
             stopAllTimers();
@@ -333,12 +345,12 @@ public class Game {
             cardLayout.show(gameBackgroundPanel, "initial");
         });
 
-        // player choice listeners (added once)
+        // listen to the player's input
         rockButton.addActionListener(e -> playRound("Rock"));
         paperButton.addActionListener(e -> playRound("Paper"));
         scissorsButton.addActionListener(e -> playRound("Scissors"));
 
-        // result panel choices
+        // result panel
         yesButton.addActionListener(e -> {
             resultPanel.setVisible(false);
             centerCardLayout.show(centerPanel, "announce");
@@ -385,55 +397,6 @@ public class Game {
         });
         countdownTimer.setInitialDelay(COUNT_DOWN_TIME_MS);
         countdownTimer.start();
-    }
-
-    private void playRound(String playerChoice) {
-        if (countdownTimer != null && countdownTimer.isRunning()) return;
-
-        disableChoices();
-        stopCountdownTimer();
-        stopNextRoundTimer();
-
-        RPSChoice computerChoice = computer.play();
-        user.setChoice(playerChoice);
-        RPSChoice userChoice = user.play();
-
-        Round round = new Round(checkers);
-        
-        boolean result = false;
-        result = round.go(userChoice, computerChoice);
-
-        if (result) {
-            resultText = "You win!";
-            winCount++;
-        } else {
-            computerWinCount++;
-            resultText = "You Lose!";
-        }
-
-        if (userChoice.getName().equals(computerChoice.getName())) {
-            resultText = "draw!";
-        }
-
-        winCountLabel.setText("Win Count: " + winCount);
-        roundsPlayed++;
-        roundsLeftLabel.setText("Rounds Left: " + (TOTAL_ROUNDS - roundsPlayed));
-
-        announcement.setText("<html><div style='text-align:center; font-size:18px;'><b>" + resultText +
-                "</b><br>You: " + userChoice.getName() + "<br>Computer: " + computerChoice.getName() + "</div></html>");
-
-        nextRoundTimer = new javax.swing.Timer(ROUND_DELAY_MS, e -> {
-            stopNextRoundTimer();
-            centerCardLayout.show(centerPanel, "announce"); // show announcement
-
-            if (roundsPlayed >= TOTAL_ROUNDS) {
-                endGame(); // trigger endGame after showing announcement
-            } else {
-                startCountdown(); // start next round countdown
-            }
-        });
-        nextRoundTimer.setRepeats(false);
-        nextRoundTimer.start();
     }
 
     private void endGame() {
@@ -483,8 +446,38 @@ public class Game {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            Game game = new Game("Mario");
+            GameView game = new GameView();
             game.play();
         });
+    }
+
+        private void styleButton(JButton btn, Color bg, Color fg) {
+        btn.setFocusPainted(false);
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btn.setBorder(new LineBorder(bg.darker(), 2, true));
+        btn.setPreferredSize(new Dimension(150, 45));
+
+        // hover effect
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(bg.brighter());
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(bg);
+            }
+        });
+    }
+
+    private JPanel createCardPanel(Color bgColor) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(bgColor);
+        panel.setBorder(new CompoundBorder(
+                new LineBorder(Color.DARK_GRAY, 2, true),
+                new EmptyBorder(20, 20, 20, 20)
+        ));
+        return panel;
     }
 }

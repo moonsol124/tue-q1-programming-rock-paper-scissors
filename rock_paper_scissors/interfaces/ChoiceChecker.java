@@ -1,6 +1,6 @@
 package rock_paper_scissors.interfaces;
 
-import rock_paper_scissors.model.RPSChoice;
+import rock_paper_scissors.abstracts.RPSChoice;
 
 /**
  * This is the interface that will be implemented by

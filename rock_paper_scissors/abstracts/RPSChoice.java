@@ -1,4 +1,4 @@
-package rock_paper_scissors.model;
+package rock_paper_scissors.abstracts;
 /**
  * This is the superclass of rock, paper, scissors that are played by
  * the user and the computer.
@@ -15,10 +15,12 @@ public abstract class RPSChoice {
         this.name = name;
     }
 
+    // Getter for number
     public int getNumber() {
         return this.number;
     }
 
+    // Getter for name
     public String getName() {
         return this.name;
     }
