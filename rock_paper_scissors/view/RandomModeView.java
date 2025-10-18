@@ -1,10 +1,10 @@
 package rock_paper_scissors.view;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-import java.awt.*;
 
 public class RandomModeView extends JPanel {
     JPanel topPanel;
@@ -51,11 +51,16 @@ public class RandomModeView extends JPanel {
         announcement.setFont(new Font("Segoe UI", Font.BOLD, 26));
         announcement.setForeground(new Color(33, 33, 33));
 
+        // AI Thinking Label
+        JLabel aiThinkingLabel = new JLabel("Make your move!", SwingConstants.CENTER);
+        aiThinkingLabel.setFont(new Font("Segoe UI", Font.ITALIC, 18));
+        aiThinkingLabel.setForeground(new Color(90, 90, 90));
+        
         JPanel announceCard = new JPanel(new BorderLayout());
         announceCard.setOpaque(false);
         announceCard.add(announcement, BorderLayout.CENTER);
         centerPanel.add(announceCard, "announce");
-
+        centerPanel.add(aiThinkingLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
 
         // Bottom panel with buttons
@@ -70,5 +75,21 @@ public class RandomModeView extends JPanel {
         bottomPanel.add(scissorsButton);
 
         add(bottomPanel, BorderLayout.SOUTH);
+    }
+    // Getters so controller can access buttons and labels 
+    public JButton getRockButton() { 
+        return rockButton; 
+    }
+
+    public JButton getPaperButton() { 
+        return paperButton; 
+    }
+
+    public JButton getScissorsButton() { 
+        return scissorsButton; 
+    }
+
+    public JLabel getAnnouncementLabel() { 
+        return announcement; 
     }
 }

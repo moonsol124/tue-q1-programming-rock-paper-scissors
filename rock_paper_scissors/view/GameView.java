@@ -1,20 +1,14 @@
 package rock_paper_scissors.view;
 
-import rock_paper_scissors.abstracts.*;
-import rock_paper_scissors.controller.*;
-import rock_paper_scissors.interfaces.*;
-import rock_paper_scissors.model.*;
-import rock_paper_scissors.module.*;
-
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Random;
+import rock_paper_scissors.controller.*;
+import rock_paper_scissors.interfaces.*;
+import rock_paper_scissors.model.*;
+import rock_paper_scissors.module.*;
 
 
 /**
@@ -286,8 +280,14 @@ public class GameView {
 
         user.setChoice(playerChoice);
         roundController = new RoundController(checkers, computer, user);
-        boolean result = false;
-        result = roundController.determineWinner();
+        
+        // Show AI thinking
+        announcement.setText("🤔 AI is thinking");
+
+        // Let AI "think" with animation and delay
+        roundController.determineWinnerWithDelay(announcement, () -> {
+        // This part runs *after* the 1-second delay inside RoundController
+        boolean result = roundController.determineWinner();
 
         if (result) {
             resultText = "You win!";
@@ -298,7 +298,7 @@ public class GameView {
         }
 
         if (roundController.determineDraw()) {
-            resultText = "draw!";
+            resultText = "Draw!";
         }
 
         winCountLabel.setText("Win Count: " + winCount);
@@ -320,7 +320,10 @@ public class GameView {
         });
         nextRoundTimer.setRepeats(false);
         nextRoundTimer.start();
-    }
+
+        enableChoices();
+    });
+}
 
     
     public void play() {
