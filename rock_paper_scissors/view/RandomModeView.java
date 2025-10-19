@@ -14,6 +14,7 @@ public class RandomModeView extends JPanel {
     JLabel winCountLabel;
     JLabel roundsLeftLabel;
     JLabel announcement;
+    JLabel aiThinkingLabel; 
 
     JButton rockButton;
     JButton paperButton;
@@ -45,7 +46,7 @@ public class RandomModeView extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Center panel with announcement
-        centerPanel = new JPanel(new CardLayout());
+        centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
         announcement = new JLabel("", SwingConstants.CENTER);
         announcement.setFont(new Font("Segoe UI", Font.BOLD, 26));
@@ -77,19 +78,36 @@ public class RandomModeView extends JPanel {
         add(bottomPanel, BorderLayout.SOUTH);
     }
     // Getters so controller can access buttons and labels 
+    
     public JButton getRockButton() { 
         return rockButton; 
     }
-
-    public JButton getPaperButton() { 
+    
+    public JButton getPaperButton() {
         return paperButton; 
     }
-
+    
     public JButton getScissorsButton() { 
         return scissorsButton; 
+    }
+    
+    public JButton getBackButton() { 
+        return backButton; 
     }
 
     public JLabel getAnnouncementLabel() { 
         return announcement; 
+    }
+    
+    public JLabel getWinCountLabel() { 
+        return winCountLabel; 
+    }
+    
+    public JLabel getRoundsLeftLabel() { 
+        return roundsLeftLabel; 
+    }
+    
+    public JLabel getAIThinkingLabel() { 
+        return aiThinkingLabel; 
     }
 }

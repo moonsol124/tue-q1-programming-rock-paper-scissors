@@ -8,15 +8,18 @@ import rock_paper_scissors.abstracts.RPSChoice;
  * It represents the users,
  */
 public class User extends Player {
-    String input;
-    RPSChoice choice;
+    private RPSChoice choice;
 
     public User(String name) {
         super(name);
     }
 
-    public void setChoice(String input) {
-        this.input = input;
+    public void setChoice(String choiceName) {
+        choice = switch (choiceName) {
+            case "Paper" -> new Paper();
+            case "Scissors" -> new Scissors();
+            default -> new Rock(); // default to Rock if unknown
+        };
     }
 
     /**
@@ -25,20 +28,10 @@ public class User extends Player {
      */
     @Override
     public void play() {
-        RPSChoice option = new Rock();
+    }   
 
-        if (this.input.equals("Paper")) {
-            option = new Paper();
-        }
-        if (this.input.equals("Scissors")) {
-            option = new Scissors();
-        }
-
-        System.out.println(option.getName());
-        this.choice = option;
-    }
-
+    @Override
     public RPSChoice getChoice() {
-        return this.choice;
+        return choice;
     }
 }

@@ -5,6 +5,8 @@ import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import rock_paper_scissors.ai.EnsembleAI; 
+import rock_paper_scissors.ai.RandomAI;
 import rock_paper_scissors.controller.*;
 import rock_paper_scissors.interfaces.*;
 import rock_paper_scissors.model.*;
@@ -23,7 +25,8 @@ import rock_paper_scissors.module.*;
  * idea:
  * 1. game play option with abstract class thus inheritance: rock, paper, scissors
  * 2. game rule checker with interface: rock checker, paper checker, scissor checker
- * 3. decides who wins, by using the rule checkers, thus applying polymorphism and lisvoke substitution
+ * 3. decides who wins, by using the rule checkers, 
+ * thus applying polymorphism and lisvoke substitution
  * 
  * how game will be done
  * 1. inital screen: choose game mode, endless trial or random
@@ -77,6 +80,7 @@ public class GameView {
     JLabel announcement;
     JLabel winCountLabel;
     JLabel roundsLeftLabel;
+    JLabel modeLabel;
 
     CardLayout cardLayout;
 
@@ -104,7 +108,8 @@ public class GameView {
         BORDER_SIZE = 20;
         checkers = new ChoiceChecker[]{new RockChecker(), new PaperChecker(), new ScissorsChecker()};
         user = new User("User");
-        computer = new Computer("Computer");
+        computer = null; // will be assigned when mode is chosen
+
         // Frame setup
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         frame = new JFrame("Rock Paper Scissors");
@@ -126,6 +131,8 @@ public class GameView {
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 36));
         titleLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
+        titleLabel.setLayout(new BorderLayout());
+        titleLabel.add(modeLabel, BorderLayout.SOUTH);
 
         announcement = new JLabel("", SwingConstants.CENTER);
         announcement.setFont(new Font("Segoe UI", Font.BOLD, 26));
@@ -136,6 +143,10 @@ public class GameView {
         Font statsFont = new Font("Segoe UI", Font.PLAIN, 16);
         winCountLabel.setFont(statsFont);
         roundsLeftLabel.setFont(statsFont);
+        modeLabel = new JLabel("Mode: None");
+        modeLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        modeLabel.setForeground(Color.DARK_GRAY);
+
 
         // Buttons
         Color btnColor = new Color(52, 152, 219);
@@ -282,55 +293,65 @@ public class GameView {
         roundController = new RoundController(checkers, computer, user);
         
         // Show AI thinking
-        announcement.setText("🤔 AI is thinking");
+        fadeText(announcement, "🤔 AI is thinking...", Color.DARK_GRAY);
 
         // Let AI "think" with animation and delay
         roundController.determineWinnerWithDelay(announcement, () -> {
-        // This part runs *after* the 1-second delay inside RoundController
-        boolean result = roundController.determineWinner();
+            // This part runs *after* the 1-second delay inside RoundController
+            boolean result = roundController.determineWinner();
 
-        if (result) {
-            resultText = "You win!";
-            winCount++;
-        } else {
-            computerWinCount++;
-            resultText = "You Lose!";
-        }
-
-        if (roundController.determineDraw()) {
-            resultText = "Draw!";
-        }
-
-        winCountLabel.setText("Win Count: " + winCount);
-        roundsPlayed++;
-        roundsLeftLabel.setText("Rounds Left: " + (TOTAL_ROUNDS - roundsPlayed));
-
-        announcement.setText("<html><div style='text-align:center; font-size:18px;'><b>" + resultText +
-                "</b><br>You: " + roundController.getUserchoiceName() + "<br>Computer: " + roundController.getComputerChoiceName() + "</div></html>");
-
-        nextRoundTimer = new javax.swing.Timer(ROUND_DELAY_MS, e -> {
-            stopNextRoundTimer();
-            centerCardLayout.show(centerPanel, "announce"); // show announcement
-
-            if (roundsPlayed >= TOTAL_ROUNDS) {
-                endGame(); // trigger endGame after showing announcement
+            if (result) {
+                resultText = "You win!";
+                winCount++;
             } else {
-                startCountdown(); // start next round countdown
+                computerWinCount++;
+                resultText = "You Lose!";
             }
-        });
-        nextRoundTimer.setRepeats(false);
-        nextRoundTimer.start();
 
-        enableChoices();
-    });
-}
+            if (roundController.determineDraw()) {
+                resultText = "Draw!";
+            }
+
+            winCountLabel.setText("Win Count: " + winCount);
+            roundsPlayed++;
+            roundsLeftLabel.setText("Rounds Left: " + (TOTAL_ROUNDS - roundsPlayed));
+
+            announcement.setText("<html><div style='text-align:center; font-size:18px;'><b>" + resultText +
+                    "</b><br>You: " + roundController.getUserchoiceName() + "<br>Computer: " + roundController.getComputerChoiceName() + "</div></html>");
+
+            nextRoundTimer = new javax.swing.Timer(ROUND_DELAY_MS, e -> {
+                stopNextRoundTimer();
+                centerCardLayout.show(centerPanel, "announce"); // show announcement
+
+                if (roundsPlayed >= TOTAL_ROUNDS) {
+                    endGame(); // trigger endGame after showing announcement
+                } else {
+                    startCountdown(); // start next round countdown
+                }
+            });
+            nextRoundTimer.setRepeats(false);
+            nextRoundTimer.start();
+
+            enableChoices();
+        });
+    }
 
     
     public void play() {
         // listners
-        randomModeButton.addActionListener(e -> enterRandomMode());
+        randomModeButton.addActionListener(e -> {
+            // Use a RandomAI for Random Mode
+            computer = new Computer("AI", new RandomAI());
+            modeLabel.setText("Mode: 🎲 Random (Easy)");
+            enterRandomMode();
+
+        });
+
         endlessTrialButton.addActionListener(e -> {
             stopAllTimers();
+            // Use MarkovAI (predictive) for Endless Mode
+            computer = new Computer("AI", new EnsembleAI());
+            modeLabel.setText("Mode: ♾️ Endless (Smart)");
             cardLayout.show(gameBackgroundPanel, "endless");
         });
 
@@ -426,12 +447,16 @@ public class GameView {
     }
 
     private void stopCountdownTimer() {
-        if (countdownTimer != null && countdownTimer.isRunning()) countdownTimer.stop();
+        if (countdownTimer != null && countdownTimer.isRunning()) {
+            countdownTimer.stop();
+        }
         countdownTimer = null;
     }
 
     private void stopNextRoundTimer() {
-        if (nextRoundTimer != null && nextRoundTimer.isRunning()) nextRoundTimer.stop();
+        if (nextRoundTimer != null && nextRoundTimer.isRunning()) {
+            nextRoundTimer.stop();
+        }
         nextRoundTimer = null;
     }
 
@@ -483,4 +508,26 @@ public class GameView {
         ));
         return panel;
     }
+    
+    private void fadeText(JLabel label, String newText, Color color) {
+        Timer fadeTimer = new Timer(30, null);
+        final float[] alpha = {0f}; // start transparent
+
+        label.setForeground(new Color(color.getRed(), color.getGreen(), color.getBlue(), 0));
+        label.setText(newText);
+
+        fadeTimer.addActionListener(e -> {
+            alpha[0] += 0.05f; // control speed here
+            if (alpha[0] >= 1f) {
+                alpha[0] = 1f;
+                ((Timer) e.getSource()).stop();
+            }
+            label.setForeground(new Color(color.getRed(), color.getGreen(), color.getBlue(),
+                Math.min(1f, alpha[0])));
+        });
+
+        fadeTimer.start();
+    }
+
+    
 }
