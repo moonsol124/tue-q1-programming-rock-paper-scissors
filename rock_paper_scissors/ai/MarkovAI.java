@@ -9,21 +9,28 @@ public class MarkovAI implements RpsAI{
     private final Map<String, double[]> transitions = new HashMap<>();
     private final Random rand = new Random();
     
-    private String last1 = null;
-    private String last2 = null;
-    private String last3 = null;
-    private static final double SMOOTH = 0.5;
-    private static final double DECAY = 0.9;
+    private final int level;       // how many past moves to remember
+    private final double decay;    // how fast to forget old info
+    private final double smooth;   // smoothing for unseen sequences
+    
+    private String[] lastMoves;
     private String lastPrediction = "Rock";
+
+    public MarkovAI(int level, double decay) {
+        this.level = Math.max(1, level);
+        this.decay = decay;
+        this.smooth = 0.5;
+        this.lastMoves = new String[level];
+    }
 
     @Override
     public String nextMove() {
-        if (last1 == null || last2 == null || last3 == null) {
-            return  MOVES[rand.nextInt(3)];
+        if (lastMoves[0] == null) {
+            return MOVES[rand.nextInt(3)];
         }
 
-        String key = last1 + "," + last2 + "," + last3;
-        double[] probs = transitions.getOrDefault(key, new double[]{1, 1, 1});
+        String key = String.join(",", lastMoves);
+        double[] probs = transitions.getOrDefault(key, new double[]{smooth, smooth, smooth});
 
         int maxIndex = 0;
         for (int i = 1; i < 3; i++) {
@@ -36,16 +43,19 @@ public class MarkovAI implements RpsAI{
         lastPrediction = predictedPlayer;
         return counter(predictedPlayer);
     }
-    
-    @Override
-    public void  observe(String playerMove, String aiMove, boolean playerWon) {
-        if (last1 != null && last2 != null && last3 != null) {
-            String key = last1 + "," + last2 + "," + last3;
-            double[] probs = transitions.getOrDefault(key, new double[]{SMOOTH, SMOOTH, SMOOTH});
 
+    @Override
+    public void observe(String playerMove, String aiMove, boolean playerWon) {
+        if (lastMoves[0] != null) {
+            String key = String.join(",", lastMoves);
+            double[] probs = transitions.getOrDefault(key, new double[]{smooth, smooth, smooth});
+
+            // decay older info
             for (int i = 0; i < probs.length; i++) {
-                probs[i] *= DECAY;
+                probs[i] *= decay;
             }
+
+            // reinforce the observed player move
             switch (playerMove) {
                 case "Rock" -> probs[0]++;
                 case "Paper" -> probs[1]++;
@@ -53,11 +63,15 @@ public class MarkovAI implements RpsAI{
                 default -> {
                 }
             }
+
             transitions.put(key, probs);
         }
-        last1 = last2;
-        last2 = last3;
-        last3 = playerMove;
+
+        // shift memory (forget oldest, add new)
+        for (int i = 0; i < level - 1; i++) {
+            lastMoves[i] = lastMoves[i + 1];
+        }
+        lastMoves[level - 1] = playerMove;
     }
 
     private String counter(String move) {
@@ -68,9 +82,13 @@ public class MarkovAI implements RpsAI{
         };
     }
 
-    public String getLastPrediction() { 
-        return lastPrediction; 
-    }   
+    public int getLevel() { 
+        return level; 
+    }
+    
+    public double getDecay() { 
+        return decay; 
+    }
 }
     
 

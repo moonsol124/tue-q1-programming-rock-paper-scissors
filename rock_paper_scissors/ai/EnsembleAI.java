@@ -7,18 +7,18 @@ import java.util.*;
  * Inspired by PiotrekG's RPS markov_v13_ensemble.
  */
 public class EnsembleAI implements RpsAI {
-    private static final String[] MOVES = {"Rock", "Paper", "Scissors"};
-    private final List<MarkovAI> models = new ArrayList<>();
-    private final double[] weights;
+    private static final String[] MOVES = {"Rock", "Paper", "Scissors"}; // the only legal moves.
+    private final List<MarkovAI> models = new ArrayList<>(); // the pool of individual predictors (each a MarkovAI).
+    private final double[] weights; // weights for each model, adjusted based on performance.
     private final Random rand = new Random();
 
     public EnsembleAI() {
-        double[] decays = {0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.97, 0.99};
-        int[] levels = {1, 2, 3, 4};
+        double[] decays = {0.5, 0.6, 0.7, 0.8, 0.9, 0.93, 0.95, 0.97, 0.99}; // learning/forgetting rate
+        int[] levels = {1, 2, 3, 4}; // memory depth
 
         for (int level : levels) {
             for (double decay : decays) {
-                models.add(new MarkovAI()); // could make constructor take level/decay
+                models.add(new MarkovAI(level, decay)); // ✅ now parameterized
             }
         }
         weights = new double[models.size()];
@@ -31,8 +31,8 @@ public class EnsembleAI implements RpsAI {
         for (String move : MOVES) totals.put(move, 0.0);
 
         for (int i = 0; i < models.size(); i++) {
-            String move = models.get(i).nextMove();
-            totals.put(move, totals.get(move) + weights[i]);
+            String move = models.get(i).nextMove(); // learning/forgetting rate
+            totals.put(move, totals.get(move) + weights[i]); // add its weight
         }
 
         // pick the move with the highest weighted sum
