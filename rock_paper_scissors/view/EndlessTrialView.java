@@ -29,7 +29,7 @@ public class EndlessTrialView extends JPanel {
     
     public EndlessTrialView() {
         setLayout(new BorderLayout());
-        setBackground(new Color(255, 249, 196));
+        setBackground(new Color(167, 199, 231));
         setBorder(new CompoundBorder(
             new LineBorder(Color.DARK_GRAY, 2, true),
             new EmptyBorder(20, 20, 20, 20)
@@ -84,15 +84,47 @@ public class EndlessTrialView extends JPanel {
         // === BOTTOM PANEL ===
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
         bottomPanel.setOpaque(false);
-        rockButton = new JButton("🪨 Rock");
-        paperButton = new JButton("📄 Paper");
-        scissorsButton = new JButton("✂️ Scissors");
+        rockButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\rock-ezgif.com-effects.gif");
+        paperButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\paper-ezgif.com-resize.gif");
+        scissorsButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\scissor-ezgif.com-resize.gif");
+        
 
         bottomPanel.add(rockButton);
         bottomPanel.add(paperButton);
         bottomPanel.add(scissorsButton);
         add(bottomPanel, BorderLayout.SOUTH);
     }
+
+    private JButton createImageButton(String imagePath) {
+        ImageIcon icon = new ImageIcon(imagePath);
+
+        // Create button with icon
+        JButton btn = new JButton(icon);
+        btn.setPreferredSize(new Dimension(120, 120)); // control button size
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+        // Optional: center and scale within button
+        btn.setHorizontalAlignment(SwingConstants.CENTER);
+        btn.setVerticalAlignment(SwingConstants.CENTER);
+
+        // Add a faint border on hover (no scaling!)
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                btn.setBorder(BorderFactory.createLineBorder(new Color(52, 152, 219), 3, true));
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                btn.setBorder(null);
+            }
+        });
+
+        return btn;
+    }
+
+
     
     public JPanel getSummaryPanel(int wins, int losses, int rounds) {
         summaryPanel = new JPanel(new BorderLayout());

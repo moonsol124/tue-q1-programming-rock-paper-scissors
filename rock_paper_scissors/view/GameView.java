@@ -218,7 +218,7 @@ public class GameView {
 
         randomModeButton = initView.randomModeButton;
         endlessTrialButton = initView.endlessTrialButton;
-        titleLabel = initView.titleLabel;
+        // titleLabel = initView.titleLabel;
 
         // Random Mode Panel 
         RandomModeView rmView = new RandomModeView();
@@ -403,7 +403,6 @@ public class GameView {
         // listners
         randomModeButton.addActionListener(e -> {
             // Use a RandomAI for Random Mode
-            computer = new Computer("AI", new RandomAI());
             modeLabel.setText("Mode: 🎲 Random (Easy)");
             isEndlessMode = false;
             enterRandomMode();
@@ -420,9 +419,35 @@ public class GameView {
         });
 
         backRandomButton.addActionListener(e -> {
-            stopAllTimers();
-            cardLayout.show(gameBackgroundPanel, "initial");
+            int choice = JOptionPane.showConfirmDialog(
+                frame,
+                "Are you sure you want to quit this game?",
+                "Exit Game",
+                JOptionPane.YES_NO_OPTION
+            );
+
+            if (choice == JOptionPane.YES_OPTION) {
+                // Stop all timers and reset everything
+                stopAllTimers();
+                disableChoices();
+
+                // Reset stats
+                winCount = computerWinCount = roundsPlayed = 0;
+
+                // Reset labels
+                winCountLabel.setText("Win Count: 0");
+                roundsLeftLabel.setText("Rounds Left: " + TOTAL_ROUNDS);
+                announcement.setText("Game ended. Returning to menu...");
+                
+                // Reset AI and round logic
+                computer = null;
+                roundController = null;
+                
+                // Go back to the main screen
+                cardLayout.show(gameBackgroundPanel, "initial");
+            }
         });
+
 
         backEndlessButton.addActionListener(e -> {
             stopAllTimers();
@@ -520,13 +545,22 @@ public class GameView {
 
     private void enterRandomMode() {
         stopAllTimers();
+        
+        // Always start a brand new AI and clean state
+        computer = new Computer("AI", new RandomAI());
+        roundController = null;
+        
         winCount = 0;
+        computerWinCount = 0;
         roundsPlayed = 0;
+        
         winCountLabel.setText("Win Count: 0");
         roundsLeftLabel.setText("Rounds Left: " + TOTAL_ROUNDS);
         announcement.setText("");
         centerCardLayout.show(centerPanel, "announce");
         cardLayout.show(gameBackgroundPanel, "random");
+        
+        enableChoices();
         startCountdown();
     }
 
