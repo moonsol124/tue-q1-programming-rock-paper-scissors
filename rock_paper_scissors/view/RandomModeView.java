@@ -46,14 +46,14 @@ public class RandomModeView extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Center panel with announcement
-        centerPanel = new JPanel(new BorderLayout());
+        centerPanel = new JPanel(new CardLayout());
         centerPanel.setOpaque(false);
         announcement = new JLabel("", SwingConstants.CENTER);
         announcement.setFont(new Font("Segoe UI", Font.BOLD, 26));
         announcement.setForeground(new Color(33, 33, 33));
 
         // AI Thinking Label
-        JLabel aiThinkingLabel = new JLabel("Make your move!", SwingConstants.CENTER);
+        aiThinkingLabel = new JLabel("Make your move!", SwingConstants.CENTER);
         aiThinkingLabel.setFont(new Font("Segoe UI", Font.ITALIC, 18));
         aiThinkingLabel.setForeground(new Color(90, 90, 90));
         
@@ -79,6 +79,10 @@ public class RandomModeView extends JPanel {
     }
     // Getters so controller can access buttons and labels 
     
+    public JPanel getCenterPanel() {
+        return centerPanel;
+    }
+
     public JButton getRockButton() { 
         return rockButton; 
     }

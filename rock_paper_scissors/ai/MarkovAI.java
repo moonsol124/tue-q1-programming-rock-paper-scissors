@@ -47,7 +47,7 @@ public class MarkovAI implements RpsAI{
     @Override
     public void observe(String playerMove, String aiMove, boolean playerWon) {
         if (lastMoves[0] != null) {
-            String key = String.join(",", lastMoves);
+            String key = String.join(",", lastMoves); // represents the pattern of recent moves
             double[] probs = transitions.getOrDefault(key, new double[]{smooth, smooth, smooth});
 
             // decay older info
