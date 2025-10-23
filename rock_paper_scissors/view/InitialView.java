@@ -1,6 +1,7 @@
 package rock_paper_scissors.view;
 
 import java.awt.*;
+import java.net.URL;
 import javax.swing.*;
 
 public class InitialView extends JPanel {
@@ -9,10 +10,13 @@ public class InitialView extends JPanel {
     private Image backgroundImage;
 
     public InitialView() {
-        // Load your background image
-        backgroundImage = new ImageIcon(
-            "D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\Descargar Rock Paper Scissors Line Vector iconos gratis.jpg"
-        ).getImage();
+        // Load the background image as a resource
+        URL imgURL = getClass().getResource("/rock_paper_scissors/assets/Descargar Rock Paper Scissors Line Vector iconos gratis.jpg");
+        if (imgURL != null) {
+            backgroundImage = new ImageIcon(imgURL).getImage();
+        } else {
+            System.err.println("Couldn't find background image!");
+        }
 
         // === Use BorderLayout ===
         setLayout(new BorderLayout());

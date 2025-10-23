@@ -1,4 +1,5 @@
 package rock_paper_scissors.view;
+import java.net.URL;
 
 import java.awt.*;
 import javax.swing.*;
@@ -84,10 +85,10 @@ public class EndlessTrialView extends JPanel {
         // === BOTTOM PANEL ===
         bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 25, 15));
         bottomPanel.setOpaque(false);
-        rockButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\rock-ezgif.com-effects.gif");
-        paperButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\paper-ezgif.com-resize.gif");
-        scissorsButton = createImageButton("D:\\A-PERSONAL\\C-Java coding\\tueQ1ProgrammingRockPaperScissors\\tue-q1-programming-rock-paper-scissors\\rock_paper_scissors\\assets\\scissor-ezgif.com-resize.gif");
         
+        rockButton = createImageButton("rock-ezgif.com-effects.gif");
+        paperButton = createImageButton("paper-ezgif.com-resize.gif");
+        scissorsButton = createImageButton("scissor-ezgif.com-resize.gif");
 
         bottomPanel.add(rockButton);
         bottomPanel.add(paperButton);
@@ -96,9 +97,9 @@ public class EndlessTrialView extends JPanel {
     }
 
     private JButton createImageButton(String imagePath) {
-        ImageIcon icon = new ImageIcon(imagePath);
-
-        // Create button with icon
+    URL imgURL = getClass().getResource("/rock_paper_scissors/assets/" + imagePath);
+    if (imgURL != null) {
+        ImageIcon icon = new ImageIcon(imgURL);
         JButton btn = new JButton(icon);
         btn.setPreferredSize(new Dimension(120, 120)); // control button size
         btn.setFocusPainted(false);
@@ -122,7 +123,11 @@ public class EndlessTrialView extends JPanel {
         });
 
         return btn;
+    } else {
+        System.err.println("Couldn't find file: " + imagePath);
+        return new JButton("Image not found");
     }
+}
 
 
     
