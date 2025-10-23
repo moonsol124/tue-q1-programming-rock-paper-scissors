@@ -51,7 +51,7 @@ public class RoundController {
         thinkingDots.start();
 
         // After 2s, stop thinking and compute result
-        new javax.swing.Timer(2000, e -> {
+        new javax.swing.Timer(500, e -> {
             thinkingDots.stop();
 
             computer.play();

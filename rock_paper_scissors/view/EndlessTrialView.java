@@ -24,6 +24,8 @@ public class EndlessTrialView extends JPanel {
     JButton finishGameButton;
     JButton backButton;
     JPanel summaryPanel;
+
+
     
     public EndlessTrialView() {
         setLayout(new BorderLayout());
@@ -38,11 +40,11 @@ public class EndlessTrialView extends JPanel {
 
         JPanel statsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
         statsPanel.setOpaque(false);
+        Font statsFont = new Font("Segoe UI", Font.BOLD, 14);
         winCountLabel = new JLabel("Win Count: 0");
         roundsLeftLabel = new JLabel("Rounds Left: 0");
         scoreLabel = new JLabel("Score: 0");
-        
-        Font statsFont = new Font("Segoe UI", Font.BOLD, 14);
+
         winCountLabel.setFont(statsFont);
         roundsLeftLabel.setFont(statsFont);
         scoreLabel.setFont(statsFont);

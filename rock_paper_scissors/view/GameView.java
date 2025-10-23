@@ -56,7 +56,7 @@ public class GameView {
     Computer computer;
     ChoiceChecker[] checkers;
     int BORDER_SIZE;
-    int ROUND_DELAY_MS = 2000;
+    int ROUND_DELAY_MS = 500;
     int COUNT_DOWN_TIME_MS = 300; // keep your chosen countdown step
     int winCount = 0;
     int computerWinCount = 0;
@@ -378,7 +378,8 @@ public class GameView {
 
         // show round result
         String html = "<html><div style='text-align:center; font-size:18px;'><b>" + resultText +
-                "</b><br>You: " + roundController.getUserchoiceName() +
+                "</b><br>You: " + roundController.getUserchoiceName() 
+                +
                 "<br>Computer: " + roundController.getComputerChoiceName() + "</div></html>";
         activeAnnouncement.setText(html);
 
@@ -429,14 +430,20 @@ public class GameView {
         });
         finishGameButton.addActionListener(e -> {
             stopAllTimers();
+            // Compute total rounds and win rates
+            int total = winCount + computerWinCount;
+            double userRate = total > 0 ? (100.0 * winCount / total) : 0;
+            double aiRate = total > 0 ? (100.0 * computerWinCount / total) : 0;
 
             // Build a simple summary message
             String summaryHtml = String.format(
                 "<html><center><h2>Game Over</h2>"
                 + "<p><b>Wins:</b> %d</p>"
                 + "<p><b>Losses:</b> %d</p>"
-                + "<p><b>Total Rounds:</b> %d</p></center></html>",
-                winCount, computerWinCount, roundsPlayed);
+                + "<p><b>Total Rounds:</b> %d</p>"
+                + "<p><b>Your Win Rate:</b> %.1f%%</p>"
+                + "<p><b>AI Win Rate:</b> %.1f%%</p></center></html>",
+                winCount, computerWinCount, roundsPlayed, userRate, aiRate);
 
             JLabel summaryLabel = new JLabel(summaryHtml, SwingConstants.CENTER);
             summaryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22));
