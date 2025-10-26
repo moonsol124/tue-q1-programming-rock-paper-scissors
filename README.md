@@ -87,3 +87,7 @@ It picks the counter move to the most likely predicted player choice.
 Atlassian. (2025). Git commands overview. In Atlassian Bitbucket Cloud documentation. Atlassian. https://www.atlassian.com/git/tutorials
 
 
+How to win over 70% matches in Rock Paper Scissors – An elementary AI approach to a populargame.https://medium.com/data-science/how-to-win-over-70-matches-in-rock-paper-scissors-3e17e67e0dab
+
+
+
