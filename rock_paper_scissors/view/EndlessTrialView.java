@@ -57,9 +57,9 @@ public class EndlessTrialView extends JPanel {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         buttonsPanel.setOpaque(false);
         finishGameButton = new JButton("🏁 Finish Game");
-        backButton = new JButton("⬅ Back");
+        //backButton = new JButton("⬅ Back");
         buttonsPanel.add(finishGameButton);
-        buttonsPanel.add(backButton);
+        //buttonsPanel.add(backButton);
 
         topPanel.add(statsPanel, BorderLayout.WEST);
         topPanel.add(buttonsPanel, BorderLayout.EAST);

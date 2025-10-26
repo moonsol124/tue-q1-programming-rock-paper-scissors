@@ -48,7 +48,7 @@ public class RandomModeView extends JPanel {
         // Center panel with announcement
         centerPanel = new JPanel(new CardLayout());
         centerPanel.setOpaque(false);
-        announcement = new JLabel("", SwingConstants.CENTER);
+        announcement = new JLabel("Select your choice!", SwingConstants.CENTER);
         announcement.setFont(new Font("Segoe UI", Font.BOLD, 26));
         announcement.setForeground(new Color(33, 33, 33));
 

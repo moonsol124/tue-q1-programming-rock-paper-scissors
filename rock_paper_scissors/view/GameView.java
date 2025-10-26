@@ -192,7 +192,7 @@ public class GameView {
         randomModeButton = new JButton("🎲 Random Mode");
         endlessTrialButton = new JButton("♾️ Endless Trial");
         backRandomButton = new JButton("⬅ Back");
-        backEndlessButton = new JButton("⬅ Back");
+        //backEndlessButton = new JButton("⬅ Back");
         finishGameButton = new JButton("🏁 Finish Game");
         yesButton = new JButton("✅ Yes");
         noButton = new JButton("❌ No");
@@ -207,7 +207,7 @@ public class GameView {
         styleButton(randomModeButton, neutralColor, Color.WHITE);
         styleButton(endlessTrialButton, neutralColor, Color.WHITE);
         styleButton(backRandomButton, accentColor, Color.WHITE);
-        styleButton(backEndlessButton, accentColor, Color.WHITE);
+        //styleButton(backEndlessButton, accentColor, Color.WHITE);
         styleButton(finishGameButton, accentColor, Color.WHITE);
         styleButton(yesButton, neutralColor, Color.WHITE);
         styleButton(noButton, accentColor, Color.WHITE);
@@ -298,7 +298,7 @@ public class GameView {
         paperButtonEndless = etView.getPaperButton();
         scissorsButtonEndless = etView.getScissorsButton();
         finishGameButton = etView.getFinishGameButton();
-        backEndlessButton = etView.getBackButton();
+        //backEndlessButton = etView.getBackButton();
         
         endlessTrialPanel = etView;
 
@@ -312,7 +312,7 @@ public class GameView {
         paperButtonEndless = etView.getPaperButton();
         scissorsButtonEndless = etView.getScissorsButton();
         finishGameButton = etView.getFinishGameButton();
-        backEndlessButton = etView.getBackButton();
+        //backEndlessButton = etView.getBackButton();
 
         gameBackgroundPanel.add(initialPanel, "initial");
         gameBackgroundPanel.add(randomModePanel, "random");
@@ -427,75 +427,98 @@ public class GameView {
             );
 
             if (choice == JOptionPane.YES_OPTION) {
-                // Stop all timers and reset everything
+                // Stop all timers and disable buttons
                 stopAllTimers();
                 disableChoices();
 
-                // Reset stats
-                winCount = computerWinCount = roundsPlayed = 0;
+                // Reset game state variables
+                winCount = 0;
+                computerWinCount = 0;
+                roundsPlayed = 0;
 
-                // Reset labels
-                winCountLabel.setText("Win Count: 0");
-                roundsLeftLabel.setText("Rounds Left: " + TOTAL_ROUNDS);
-                announcement.setText("Game ended. Returning to menu...");
-                
                 // Reset AI and round logic
                 computer = null;
                 roundController = null;
-                
+
+                // Reset the randomModePanel's UI to its initial state for the next game
+                randomWinLabel.setText("Win Count: 0");
+                randomRoundsLabel.setText("Rounds Left: " + TOTAL_ROUNDS);
+                randomAnnouncement.setText("Select your choice!"); // Clear the announcement text
+                centerCardLayout.show(centerPanel, "announce"); // IMPORTANT: Show the announcement panel, not the results panel
+
                 // Go back to the main screen
                 cardLayout.show(gameBackgroundPanel, "initial");
             }
         });
 
 
-        backEndlessButton.addActionListener(e -> {
-            stopAllTimers();
+        // backEndlessButton.addActionListener(e -> {
+        //     stopAllTimers();
+        //     cardLayout.show(gameBackgroundPanel, "initial");
+        // });
+        finishGameButton.addActionListener(e -> {
+        stopAllTimers();
+
+        // Compute total rounds and win rates
+        int total = winCount + computerWinCount;
+        double userRate = total > 0 ? (100.0 * winCount / total) : 0;
+        double aiRate = total > 0 ? (100.0 * computerWinCount / total) : 0;
+
+        // Build a simple summary message
+        String summaryHtml = String.format(
+            "<html><center><h2>Game Over</h2>"
+            + "<p><b>Wins:</b> %d</p>"
+            + "<p><b>Losses:</b> %d</p>"
+            + "<p><b>Total Rounds:</b> %d</p>"
+            + "<p><b>Your Win Rate:</b> %.1f%%</p>"
+            + "<p><b>AI Win Rate:</b> %.1f%%</p></center></html>",
+            winCount, computerWinCount, roundsPlayed, userRate, aiRate
+        );
+
+        JLabel summaryLabel = new JLabel(summaryHtml, SwingConstants.CENTER);
+        summaryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+
+        JPanel summaryPanel = new JPanel(new BorderLayout());
+        summaryPanel.setBackground(new Color(255, 249, 196));
+        summaryPanel.setBorder(new CompoundBorder(
+            new LineBorder(Color.DARK_GRAY, 2, true),
+            new EmptyBorder(40, 40, 40, 40)
+        ));
+        summaryPanel.add(summaryLabel, BorderLayout.CENTER);
+
+        JButton backToMenu = new JButton("⬅ Back to Menu");
+        styleButton(backToMenu, new Color(231, 76, 60), Color.WHITE);
+        backToMenu.addActionListener(ev -> {
+            // Reset EndlessTrialView labels to initial state
+            etView.getWinCountLabel().setText("Win Count: 0");
+            etView.getRoundsLeftLabel().setText("Rounds: 0");
+            etView.getAnnouncementLabel().setText("Make your move!");
+            if (etView.getScoreLabel() != null) {
+                etView.getScoreLabel().setText("Score: 0");
+            }
+
+            // Also reset counters
+            winCount = 0;
+            computerWinCount = 0;
+            roundsPlayed = 0;
+
             cardLayout.show(gameBackgroundPanel, "initial");
         });
-        finishGameButton.addActionListener(e -> {
-            stopAllTimers();
-            // Compute total rounds and win rates
-            int total = winCount + computerWinCount;
-            double userRate = total > 0 ? (100.0 * winCount / total) : 0;
-            double aiRate = total > 0 ? (100.0 * computerWinCount / total) : 0;
 
-            // Build a simple summary message
-            String summaryHtml = String.format(
-                "<html><center><h2>Game Over</h2>"
-                + "<p><b>Wins:</b> %d</p>"
-                + "<p><b>Losses:</b> %d</p>"
-                + "<p><b>Total Rounds:</b> %d</p>"
-                + "<p><b>Your Win Rate:</b> %.1f%%</p>"
-                + "<p><b>AI Win Rate:</b> %.1f%%</p></center></html>",
-                winCount, computerWinCount, roundsPlayed, userRate, aiRate);
+        JPanel bottom = new JPanel();
+        bottom.setOpaque(false);
+        bottom.add(backToMenu);
+        summaryPanel.add(bottom, BorderLayout.SOUTH);
 
-            JLabel summaryLabel = new JLabel(summaryHtml, SwingConstants.CENTER);
-            summaryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22));
+        // Reset internal counters
+        winCount = 0;
+        computerWinCount = 0;
+        roundsPlayed = 0;
 
-            JPanel summaryPanel = new JPanel(new BorderLayout());
-            summaryPanel.setBackground(new Color(255, 249, 196));
-            summaryPanel.setBorder(new CompoundBorder(
-                new LineBorder(Color.DARK_GRAY, 2, true),
-                new EmptyBorder(40, 40, 40, 40)
-            ));
-            summaryPanel.add(summaryLabel, BorderLayout.CENTER);
-
-            JButton backToMenu = new JButton("⬅ Back to Menu");
-            
-            styleButton(backToMenu, new Color(231, 76, 60), Color.WHITE);
-            backToMenu.addActionListener(ev -> {
-                cardLayout.show(gameBackgroundPanel, "initial");
-            });
-            JPanel bottom = new JPanel();
-            bottom.setOpaque(false);
-            bottom.add(backToMenu);
-            summaryPanel.add(bottom, BorderLayout.SOUTH);
-
-            // Add and show this temporary summary panel
-            gameBackgroundPanel.add(summaryPanel, "summary");
-            cardLayout.show(gameBackgroundPanel, "summary");
-        });
+        // Add and show this temporary summary panel
+        gameBackgroundPanel.add(summaryPanel, "summary");
+        cardLayout.show(gameBackgroundPanel, "summary");
+    });
 
 
         // listen to the player's input
@@ -531,12 +554,14 @@ public class GameView {
         yesButton.addActionListener(e -> {
             resultPanel.setVisible(false);
             centerCardLayout.show(centerPanel, "announce");
+            randomAnnouncement.setText("Select your choice!"); // Clear the announcement text
             enterRandomMode();
         });
 
         noButton.addActionListener(e -> {
             resultPanel.setVisible(false);
             centerCardLayout.show(centerPanel, "announce");
+            randomAnnouncement.setText("Select your choice!"); // Clear the announcement text
             cardLayout.show(gameBackgroundPanel, "initial");
         });
 
@@ -724,4 +749,3 @@ public class GameView {
 
     
 }
-
